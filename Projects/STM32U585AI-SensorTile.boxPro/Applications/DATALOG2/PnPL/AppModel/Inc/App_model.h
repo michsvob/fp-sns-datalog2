@@ -65,6 +65,7 @@ extern "C" {
 #include "PnPLCompManager.h"
 #include "SensorManager.h"
 #include "parson.h"
+#include "App_model_Iis2dh_Acc.h"
 #include "App_model_Lis2du12_Acc.h"
 #include "App_model_Lis2mdl_Mag.h"
 #include "App_model_Lps22df_Press.h"

@@ -1,11 +1,11 @@
-#include "../Inc/Iis2dh_Acc_PnPL.h"
+
 #include <App_model.h>
 #include <PnPLCompManager.h>
 #include <PnPLDef.h>
 #include <stdbool.h>
 #include <string.h>
 #include <sys/_stdint.h>
-
+#include "Iis2dh_Acc_PnPL.h"
 
 static const IPnPLComponent_vtbl sIis2dh_Acc_PnPL_CompIF_vtbl =
 {

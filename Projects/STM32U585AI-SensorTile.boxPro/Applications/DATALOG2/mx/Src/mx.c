@@ -146,6 +146,8 @@ const MX_GPIOParams_t MX_GPIO_CS_EXTERNALInitParams =
   SPI_DUT_CS_GPIO_Port
 };
 
+
+
 /**
   * PI5 Initialization parameters.
   */

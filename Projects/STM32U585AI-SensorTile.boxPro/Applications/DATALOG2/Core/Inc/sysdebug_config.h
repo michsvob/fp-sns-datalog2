@@ -50,6 +50,7 @@ extern "C" {
 #define SYS_DBG_MP23DB01HP                 SYS_DBG_ON                 ///< MP23DB01HP task debug control byte
 #define SYS_DBG_LIS2MDL                    SYS_DBG_ON                 ///< LIS2MDL task debug control byte
 #define SYS_DBG_LIS2DU12                   SYS_DBG_ON                 ///< LIS2DU12 task debug control byte
+#define SYS_DBG_IIS2DH                     SYS_DBG_ON                 ///< IIS2DH task debug control byte
 #define SYS_DBG_LPS22DF                    SYS_DBG_ON                 ///< LPS22DF task debug control byte
 #define SYS_DBG_STTS22H                    SYS_DBG_ON                 ///< STTS22H task debug control byterol byte
 #define SYS_DBG_SMUTIL                     SYS_DBG_ON                 ///< Utility task debug control byte

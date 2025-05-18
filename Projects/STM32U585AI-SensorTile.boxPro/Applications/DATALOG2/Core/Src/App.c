@@ -40,6 +40,9 @@
 #include "STTS22HTask.h"
 #include "MP23DB01HPTask.h"
 
+#include "IIS2DHTask.h"
+
+
 #include "H3LIS331DLTask.h"
 #include "ILPS28QSWTask.h"
 #include "LSM6DSV32XTask.h"
@@ -49,6 +52,7 @@
 
 #include "PnPLCompManager.h"
 #include "Lis2du12_Acc_PnPL.h"
+#include "Iis2dh_Acc_PnPL.h"
 #include "Lis2mdl_Mag_PnPL.h"
 #include "Lps22df_Press_PnPL.h"
 #include "Lsm6dsv16x_Acc_PnPL.h"
@@ -67,6 +71,7 @@
 #include "Lsm6dsv32x_Acc_PnPL.h"
 #include "Lsm6dsv32x_Gyro_PnPL.h"
 #include "Lsm6dsv32x_Mlc_PnPL.h"
+
 #include "Deviceinformation_PnPL.h"
 #include "Automode_PnPL.h"
 #include "Log_Controller_PnPL.h"
@@ -74,6 +79,7 @@
 #include "Acquisition_Info_PnPL.h"
 #include "Firmware_Info_PnPL.h"
 #include "parson.h"
+
 
 static uint8_t BOARD_ID = BOARD_ID_PROA;
 static uint8_t FW_ID = USB_FW_ID_DATALOG2_PROA;
@@ -98,6 +104,8 @@ static IPnPLComponent_t *pFirmwareInfoPnPLObj = NULL;
 static IPnPLComponent_t *pAcquisitionInfoPnPLObj = NULL;
 static IPnPLComponent_t *pTagsInfoPnPLObj = NULL;
 static IPnPLComponent_t *pAutomodePnPLObj = NULL;
+
+static IPnPLComponent_t *pIis2dh_Acc_PnPLObj = NULL;
 
 static IPnPLComponent_t *pH3LIS331DL_ACC_PnPLObj = NULL;
 static IPnPLComponent_t *pILPS28QSW_PRESS_PnPLObj = NULL;
@@ -133,7 +141,7 @@ static AManagedTaskEx *sISM330ISObj = NULL;
 static AManagedTaskEx *sH3LIS331DLObj = NULL;
 static AManagedTaskEx *sILPS28QSWObj = NULL;
 static AManagedTaskEx *sLSM6DSV32XObj = NULL;
-
+static AManagedTaskEx *sIIS2DHObj = NULL;
 
 /**
   * DatalogApp
@@ -235,6 +243,11 @@ sys_error_code_t SysLoadApplicationContext(ApplicationContext *pAppContext)
     sILPS28QSWObj = ILPS28QSWTaskAlloc(NULL, NULL);
   }
 
+
+  sIIS2DHObj = IIS2DHTaskAlloc(NULL, &MX_GPIO_CS_EXTERNALInitParams);
+
+
+
   /* Add the task object to the context. */
   res = ACAddTask(pAppContext, (AManagedTask *) sUtilObj);
   res = ACAddTask(pAppContext, (AManagedTask *) sDatalogAppObj);
@@ -249,6 +262,7 @@ sys_error_code_t SysLoadApplicationContext(ApplicationContext *pAppContext)
     res = ACAddTask(pAppContext, (AManagedTask *) sSPI3BusObj);
   }
 
+  res = ACAddTask(pAppContext, (AManagedTask *) sIIS2DHObj);
   res = ACAddTask(pAppContext, (AManagedTask *) sLIS2DU12Obj);
   res = ACAddTask(pAppContext, (AManagedTask *) sLIS2MDLObj);
   res = ACAddTask(pAppContext, (AManagedTask *) sLPS22DFObj);
@@ -321,6 +335,7 @@ sys_error_code_t SysLoadApplicationContext(ApplicationContext *pAppContext)
     pLSM6DSV16X_GYRO_PnPLObj = Lsm6dsv16x_Gyro_PnPLAlloc();
     pLSM6DSV16X_MLC_PnPLObj = Lsm6dsv16x_Mlc_PnPLAlloc();
   }
+  pIis2dh_Acc_PnPLObj = Iis2dh_Acc_PnPLAlloc();
 
   pDeviceInfoPnPLObj = Deviceinformation_PnPLAlloc();
   pAcquisitionInfoPnPLObj = Acquisition_Info_PnPLAlloc();
@@ -340,6 +355,7 @@ sys_error_code_t SysOnStartApplication(ApplicationContext *pAppContext)
   UNUSED(pAppContext);
 
   /* connect the sensor task to the bus. */
+  SPIBusTaskConnectDevice((SPIBusTask *) sSPI3BusObj, (SPIBusIF *)IIS2DHTaskGetSensorIF((IIS2DHTask *) sIIS2DHObj));
   I2CBusTaskConnectDevice((I2CBusTask *) sI2C1BusObj, (I2CBusIF *)LIS2MDLTaskGetSensorIF((LIS2MDLTask *) sLIS2MDLObj));
   I2CBusTaskConnectDevice((I2CBusTask *) sI2C1BusObj, (I2CBusIF *)LPS22DFTaskGetSensorIF((LPS22DFTask *) sLPS22DFObj));
   I2CBusTaskConnectDevice((I2CBusTask *) sI2C1BusObj, (I2CBusIF *)STTS22HTaskGetSensorIF((STTS22HTask *) sSTTS22HObj));
@@ -384,6 +400,7 @@ sys_error_code_t SysOnStartApplication(ApplicationContext *pAppContext)
   IEventSrcAddEventListener(LPS22DFTaskGetPressEventSrcIF((LPS22DFTask *) sLPS22DFObj), DatalogAppListener);
   IEventSrcAddEventListener(MP23DB01HPTaskGetEventSrcIF((MP23DB01HPTask *) sMP23DB01HPObj), DatalogAppListener);
   IEventSrcAddEventListener(STTS22HTaskGetTempEventSrcIF((STTS22HTask *) sSTTS22HObj), DatalogAppListener);
+  IEventSrcAddEventListener(IIS2DHTaskGetEventSrcIF((IIS2DHTask *) sIIS2DHObj), DatalogAppListener);
 
   /* Use the external ISM330IS with ISPU or the onboard LSM6DSV16X with MLC */
   if (sISM330ISObj)
@@ -449,6 +466,8 @@ sys_error_code_t SysOnStartApplication(ApplicationContext *pAppContext)
   Lps22df_Press_PnPLInit(pLPS22DF_PRESS_PnPLObj);
   Mp23db01hp_Mic_PnPLInit(pMP23DB01HP_MIC_PnPLObj);
   Stts22h_Temp_PnPLInit(pSTTS22H_TEMP_PnPLObj);
+  Iis2dh_Acc_PnPLInit(pIis2dh_Acc_PnPLObj);
+
 
   /* Use the external ISM330IS with ISPU or the onboard LSM6DSV16X with MLC */
   if (sISM330ISObj)

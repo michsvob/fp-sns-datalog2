@@ -56,6 +56,7 @@
 #define IIS2DH_TASK_CFG_MAX_INSTANCES_COUNT      1
 #endif
 
+
 #define SYS_DEBUGF(level, message)               SYS_DEBUGF3(SYS_DBG_IIS2DH, level, message)
 
 #ifndef IIS2DH_TASK_CFG_I2C_ADDRESS

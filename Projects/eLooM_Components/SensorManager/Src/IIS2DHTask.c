@@ -492,7 +492,7 @@ sys_error_code_t IIS2DHTask_vtblOnCreateTask(AManagedTask *_this, tx_entry_funct
   res = IIS2DHTaskSensorRegister(p_obj);
   if (SYS_IS_ERROR_CODE(res))
   {
-    SYS_DEBUGF(SYS_DBG_LEVEL_VERBOSE, ("IIS2DH: unable to register with DB\r\n"));
+    SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: unable to register with DB\r\n"));
     sys_error_handler();
   }
 
@@ -527,7 +527,7 @@ sys_error_code_t IIS2DHTask_vtblDoEnterPowerMode(AManagedTask *_this, const EPow
       p_obj->prev_timestamp = 0.0f;
     }
 
-    SYS_DEBUGF(SYS_DBG_LEVEL_VERBOSE, ("IIS2DH: -> SENSORS_ACTIVE\r\n"));
+    SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: -> SENSORS_ACTIVE\r\n"));
   }
   else if (NewPowerMode == E_POWER_MODE_STATE1)
   {
@@ -554,7 +554,7 @@ sys_error_code_t IIS2DHTask_vtblDoEnterPowerMode(AManagedTask *_this, const EPow
       }
     }
 
-    SYS_DEBUGF(SYS_DBG_LEVEL_VERBOSE, ("IIS2DH: -> STATE1\r\n"));
+    SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: -> STATE1\r\n"));
   }
   else if (NewPowerMode == E_POWER_MODE_SLEEP_1)
   {
@@ -563,7 +563,7 @@ sys_error_code_t IIS2DHTask_vtblDoEnterPowerMode(AManagedTask *_this, const EPow
     res = IIS2DHTaskEnterLowPowerMode(p_obj);
     if (SYS_IS_ERROR_CODE(res))
     {
-      SYS_DEBUGF(SYS_DBG_LEVEL_WARNING, ("IIS2DH - Enter Low Power Mode failed.\r\n"));
+      SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH - Enter Low Power Mode failed.\r\n"));
     }
     if (p_obj->pIRQConfig != NULL)
     {
@@ -579,7 +579,7 @@ sys_error_code_t IIS2DHTask_vtblDoEnterPowerMode(AManagedTask *_this, const EPow
       tx_timer_deactivate(&p_obj->read_timer);
     }
 
-    SYS_DEBUGF(SYS_DBG_LEVEL_VERBOSE, ("IIS2DH: -> SLEEP_1\r\n"));
+    SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: -> SLEEP_1\r\n"));
   }
 
   return res;
@@ -599,7 +599,7 @@ sys_error_code_t IIS2DHTask_vtblOnEnterTaskControlLoop(AManagedTask *_this)
   assert_param(_this != NULL);
   sys_error_code_t res = SYS_NO_ERROR_CODE;
 
-  SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: start.\r\n"));
+  SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: start. Hi.\r\n"));
 
 #if defined(ENABLE_THREADX_DBG_PIN) && defined (IIS2DH_TASK_CFG_TAG)
   IIS2DHTask *p_obj = (IIS2DHTask *) _this;
@@ -982,7 +982,7 @@ static sys_error_code_t IIS2DHTaskExecuteStepState1(AManagedTask *_this)
             res = SYS_SENSOR_TASK_UNKNOWN_MSG_ERROR_CODE;
             SYS_SET_SERVICE_LEVEL_ERROR_CODE(SYS_SENSOR_TASK_UNKNOWN_MSG_ERROR_CODE);
 
-            SYS_DEBUGF(SYS_DBG_LEVEL_WARNING, ("IIS2DH: unexpected report in Run: %i\r\n", report.messageID));
+            SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: unexpected report in Run: %i\r\n", report.messageID));
             break;
         }
         break;
@@ -992,7 +992,7 @@ static sys_error_code_t IIS2DHTaskExecuteStepState1(AManagedTask *_this)
         /* unwanted report */
         res = SYS_SENSOR_TASK_UNKNOWN_MSG_ERROR_CODE;
         SYS_SET_SERVICE_LEVEL_ERROR_CODE(SYS_SENSOR_TASK_UNKNOWN_MSG_ERROR_CODE);
-        SYS_DEBUGF(SYS_DBG_LEVEL_WARNING, ("IIS2DH: unexpected report in Run: %i\r\n", report.messageID));
+        SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: unexpected report in Run: %i\r\n", report.messageID));
         break;
       }
 
@@ -1027,7 +1027,7 @@ static sys_error_code_t IIS2DHTaskExecuteStepDatalog(AManagedTask *_this)
       }
       case SM_MESSAGE_ID_DATA_READY:
       {
-        SYS_DEBUGF(SYS_DBG_LEVEL_ALL, ("IIS2DH: new data.\r\n"));
+        SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: new data.\r\n"));
         res = IIS2DHTaskSensorReadData(p_obj);
         if (!SYS_IS_ERROR_CODE(res))
         {
@@ -1057,7 +1057,7 @@ static sys_error_code_t IIS2DHTaskExecuteStepDatalog(AManagedTask *_this)
 
               DataEventInit((IEvent *) &evt, p_obj->p_event_src, &p_obj->data, timestamp, p_obj->acc_id);
               IEventSrcSendEvent(p_obj->p_event_src, (IEvent *) &evt, NULL);
-              SYS_DEBUGF(SYS_DBG_LEVEL_ALL, ("IIS2DH: ts = %f\r\n", (float)timestamp));
+              SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: ts = %f\r\n", (float)timestamp));
 #if IIS2DH_FIFO_ENABLED
             }
 #endif
@@ -1120,7 +1120,7 @@ static sys_error_code_t IIS2DHTaskExecuteStepDatalog(AManagedTask *_this)
             SYS_SET_SERVICE_LEVEL_ERROR_CODE(SYS_SENSOR_TASK_UNKNOWN_MSG_ERROR_CODE)
             ;
 
-            SYS_DEBUGF(SYS_DBG_LEVEL_WARNING, ("IIS2DH: unexpected report in Datalog: %i\r\n", report.messageID));
+            SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: unexpected report in Datalog: %i\r\n", report.messageID));
             break;
         }
         break;
@@ -1131,7 +1131,7 @@ static sys_error_code_t IIS2DHTaskExecuteStepDatalog(AManagedTask *_this)
         SYS_SET_SERVICE_LEVEL_ERROR_CODE(SYS_SENSOR_TASK_UNKNOWN_MSG_ERROR_CODE)
         ;
 
-        SYS_DEBUGF(SYS_DBG_LEVEL_WARNING, ("IIS2DH: unexpected report in Datalog: %i\r\n", report.messageID));
+        SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: unexpected report in Datalog: %i\r\n", report.messageID));
         break;
     }
   }
@@ -1193,6 +1193,7 @@ static inline sys_error_code_t IIS2DHTaskPostReportToBack(IIS2DHTask *_this, SMM
 
 static sys_error_code_t IIS2DHTaskSensorInit(IIS2DHTask *_this)
 {
+  SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: SensorInit called\r\n"));
   assert_param(_this != NULL);
   sys_error_code_t res = SYS_NO_ERROR_CODE;
   stmdev_ctx_t *p_sensor_drv = (stmdev_ctx_t *) &_this->p_sensor_bus_if->m_xConnector;
@@ -1214,8 +1215,13 @@ static sys_error_code_t IIS2DHTaskSensorInit(IIS2DHTask *_this)
   if (ret_val == 0)
   {
     ABusIFSetWhoAmI(_this->p_sensor_bus_if, reg0);
+    SYS_DEBUGF(SYS_DBG_LEVEL_SEVERE, ("IIS2DH: WHOAMI = 0x%02X , should be 0x%02X\r\n", reg0, IIS2DH_ID));
   }
-  SYS_DEBUGF(SYS_DBG_LEVEL_VERBOSE, ("IIS2DH: sensor - I am 0x%x.\r\n", reg0));
+  else
+  {
+    SYS_DEBUGF(SYS_DBG_LEVEL_SEVERE, ("IIS2DH: WHOAMI read failed! ret_val=%d\r\n", ret_val));
+  }
+
 
   iis2dh_ctrl_reg1_t ctrl_reg1;
   iis2dh_read_reg(p_sensor_drv, IIS2DH_CTRL_REG1, (uint8_t *)&ctrl_reg1, 1);
@@ -1224,6 +1230,7 @@ static sys_error_code_t IIS2DHTaskSensorInit(IIS2DHTask *_this)
   ctrl_reg1.yen = 0;
   ctrl_reg1.zen = 0;
   iis2dh_write_reg(p_sensor_drv, IIS2DH_CTRL_REG1, (uint8_t *)&ctrl_reg1, 1);
+  SYS_DEBUGF(SYS_DBG_LEVEL_SEVERE, ("IIS2DH: CTRL_REG1 written: 0x%02X\r\n", *((uint8_t *)&ctrl_reg1)));
 
   /* Enable BDU */
   iis2dh_block_data_update_set(p_sensor_drv, PROPERTY_ENABLE);
@@ -1344,12 +1351,15 @@ static sys_error_code_t IIS2DHTaskSensorInit(IIS2DHTask *_this)
     _this->iis2dh_task_cfg_timer_period_ms = (uint16_t)(1000.0f / _this->sensor_status.type.mems.odr);
 #endif
   }
+  SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: sensor init finished\r\n"));
+
 
   return res;
 }
 
 static sys_error_code_t IIS2DHTaskSensorReadData(IIS2DHTask *_this)
 {
+  SYS_DEBUGF(SYS_DBG_LEVEL_SEVERE, ("IIS2DH: calling sensor read data\r\n"));
   assert_param(_this != NULL);
   sys_error_code_t res = SYS_NO_ERROR_CODE;
   stmdev_ctx_t *p_sensor_drv = (stmdev_ctx_t *) &_this->p_sensor_bus_if->m_xConnector;
@@ -1484,6 +1494,7 @@ static sys_error_code_t IIS2DHTaskSensorSetODR(IIS2DHTask *_this, SMMessage repo
 
   /* when odr changes the samples_per_it must be recalculated */
   _this->samples_per_it = 0;
+  SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: setting odr finished\r\n"));
 
   return res;
 }

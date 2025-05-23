@@ -42,7 +42,6 @@
 
 #include "IIS2DHTask.h"
 
-
 #include "H3LIS331DLTask.h"
 #include "ILPS28QSWTask.h"
 #include "LSM6DSV32XTask.h"
@@ -105,7 +104,7 @@ static IPnPLComponent_t *pAcquisitionInfoPnPLObj = NULL;
 static IPnPLComponent_t *pTagsInfoPnPLObj = NULL;
 static IPnPLComponent_t *pAutomodePnPLObj = NULL;
 
-static IPnPLComponent_t *pIis2dh_Acc_PnPLObj = NULL;
+static IPnPLComponent_t *pIIS2DH_ACC_PnPLObj = NULL;
 
 static IPnPLComponent_t *pH3LIS331DL_ACC_PnPLObj = NULL;
 static IPnPLComponent_t *pILPS28QSW_PRESS_PnPLObj = NULL;
@@ -216,7 +215,10 @@ sys_error_code_t SysLoadApplicationContext(ApplicationContext *pAppContext)
   sMP23DB01HPObj = MP23DB01HPTaskAlloc(&MX_ADF1InitParams);
   sSTTS22HObj = STTS22HTaskAlloc(NULL, NULL, 0x71);
 
+
+
   /* Use the external ISM330IS with ISPU or the onboard LSM6DSV16X with MLC */
+
   if (ext_ism330is)
   {
     sISM330ISObj = ISM330ISTaskAlloc(&MX_GPIO_INT2_EXTERNALInitParams, &MX_GPIO_INT1_EXTERNALInitParams, &MX_GPIO_CS_EXTERNALInitParams);
@@ -242,10 +244,9 @@ sys_error_code_t SysLoadApplicationContext(ApplicationContext *pAppContext)
   {
     sILPS28QSWObj = ILPS28QSWTaskAlloc(NULL, NULL);
   }
+  
 
-
-  sIIS2DHObj = IIS2DHTaskAlloc(NULL, &MX_GPIO_CS_EXTERNALInitParams);
-
+    sIIS2DHObj = IIS2DHTaskAlloc(&MX_GPIO_INT1_EXTERNALInitParams, &MX_GPIO_CS_EXTERNALInitParams);
 
 
   /* Add the task object to the context. */
@@ -253,6 +254,8 @@ sys_error_code_t SysLoadApplicationContext(ApplicationContext *pAppContext)
   res = ACAddTask(pAppContext, (AManagedTask *) sDatalogAppObj);
   res = ACAddTask(pAppContext, (AManagedTask *) sI2C1BusObj);
   res = ACAddTask(pAppContext, (AManagedTask *) sSPI2BusObj);
+  
+
   if (ext_ilps28qsw)
   {
     res = ACAddTask(pAppContext, (AManagedTask *) sI2C3BusObj);
@@ -262,14 +265,17 @@ sys_error_code_t SysLoadApplicationContext(ApplicationContext *pAppContext)
     res = ACAddTask(pAppContext, (AManagedTask *) sSPI3BusObj);
   }
 
-  res = ACAddTask(pAppContext, (AManagedTask *) sIIS2DHObj);
+
+
   res = ACAddTask(pAppContext, (AManagedTask *) sLIS2DU12Obj);
   res = ACAddTask(pAppContext, (AManagedTask *) sLIS2MDLObj);
+
   res = ACAddTask(pAppContext, (AManagedTask *) sLPS22DFObj);
   res = ACAddTask(pAppContext, (AManagedTask *) sMP23DB01HPObj);
   res = ACAddTask(pAppContext, (AManagedTask *) sSTTS22HObj);
+  res = ACAddTask(pAppContext, (AManagedTask *) sIIS2DHObj);
 
-  /* Use the external ISM330IS with ISPU or the onboard LSM6DSV16X with MLC */
+  /* Use the external ISM330IS with ISPU or the onboard LSM6DSV16X with MLC   */
   if (ext_ism330is)
   {
     res = ACAddTask(pAppContext, (AManagedTask *) sISM330ISObj);
@@ -296,13 +302,17 @@ sys_error_code_t SysLoadApplicationContext(ApplicationContext *pAppContext)
     res = ACAddTask(pAppContext, (AManagedTask *) sILPS28QSWObj);
   }
 
+
   pLIS2DU12_ACC_PnPLObj = Lis2du12_Acc_PnPLAlloc();
   pLIS2MDL_MAG_PnPLObj = Lis2mdl_Mag_PnPLAlloc();
   pLPS22DF_PRESS_PnPLObj = Lps22df_Press_PnPLAlloc();
   pMP23DB01HP_MIC_PnPLObj = Mp23db01hp_Mic_PnPLAlloc();
   pSTTS22H_TEMP_PnPLObj = Stts22h_Temp_PnPLAlloc();
+  pIIS2DH_ACC_PnPLObj = Iis2dh_Acc_PnPLAlloc();
 
-  /* Use the external ISM330IS with ISPU or the onboard LSM6DSV16X with MLC */
+
+
+  /* Use the external ISM330IS with ISPU or the onboard LSM6DSV16X with MLC   */
   if (sISM330ISObj)
   {
     pISM330IS_ACC_PnPLObj = Ism330is_Acc_PnPLAlloc();
@@ -335,7 +345,8 @@ sys_error_code_t SysLoadApplicationContext(ApplicationContext *pAppContext)
     pLSM6DSV16X_GYRO_PnPLObj = Lsm6dsv16x_Gyro_PnPLAlloc();
     pLSM6DSV16X_MLC_PnPLObj = Lsm6dsv16x_Mlc_PnPLAlloc();
   }
-  pIis2dh_Acc_PnPLObj = Iis2dh_Acc_PnPLAlloc();
+  
+
 
   pDeviceInfoPnPLObj = Deviceinformation_PnPLAlloc();
   pAcquisitionInfoPnPLObj = Acquisition_Info_PnPLAlloc();
@@ -355,13 +366,12 @@ sys_error_code_t SysOnStartApplication(ApplicationContext *pAppContext)
   UNUSED(pAppContext);
 
   /* connect the sensor task to the bus. */
-  SPIBusTaskConnectDevice((SPIBusTask *) sSPI3BusObj, (SPIBusIF *)IIS2DHTaskGetSensorIF((IIS2DHTask *) sIIS2DHObj));
   I2CBusTaskConnectDevice((I2CBusTask *) sI2C1BusObj, (I2CBusIF *)LIS2MDLTaskGetSensorIF((LIS2MDLTask *) sLIS2MDLObj));
   I2CBusTaskConnectDevice((I2CBusTask *) sI2C1BusObj, (I2CBusIF *)LPS22DFTaskGetSensorIF((LPS22DFTask *) sLPS22DFObj));
   I2CBusTaskConnectDevice((I2CBusTask *) sI2C1BusObj, (I2CBusIF *)STTS22HTaskGetSensorIF((STTS22HTask *) sSTTS22HObj));
   SPIBusTaskConnectDevice((SPIBusTask *) sSPI2BusObj, (SPIBusIF *)LIS2DU12TaskGetSensorIF((LIS2DU12Task *) sLIS2DU12Obj));
 
-  /* Use the external ISM330IS with ISPU or the onboard LSM6DSV16X with MLC */
+  /* Use the external ISM330IS with ISPU or the onboard LSM6DSV16X with MLC  */
   if (sISM330ISObj)
   {
     SPIBusTaskConnectDevice((SPIBusTask *) sSPI3BusObj,
@@ -392,6 +402,9 @@ sys_error_code_t SysOnStartApplication(ApplicationContext *pAppContext)
     SPIBusTaskConnectDevice((SPIBusTask *) sSPI2BusObj,
                             (SPIBusIF *)LSM6DSV16XTaskGetSensorIF((LSM6DSV16XTask *) sLSM6DSV16XObj));
   }
+ 
+  SPIBusTaskConnectDevice((SPIBusTask *) sSPI3BusObj, (SPIBusIF *)IIS2DHTaskGetSensorIF((IIS2DHTask *) sIIS2DHObj));
+
 
   /************ Connect the Sensor events to the DatalogAppTask ************/
   IEventListener *DatalogAppListener = DatalogAppTask_GetEventListenerIF((DatalogAppTask *) sDatalogAppObj);
@@ -435,6 +448,7 @@ sys_error_code_t SysOnStartApplication(ApplicationContext *pAppContext)
     IEventSrcAddEventListener(LSM6DSV16XTaskGetGyroEventSrcIF((LSM6DSV16XTask *) sLSM6DSV16XObj), DatalogAppListener);
     IEventSrcAddEventListener(LSM6DSV16XTaskGetMlcEventSrcIF((LSM6DSV16XTask *) sLSM6DSV16XObj), DatalogAppListener);
   }
+    
 
   /************ Connect Sensor LL to be used for ucf management to the DatalogAppTask ************/
   if (sLSM6DSV16BXObj)
@@ -449,6 +463,7 @@ sys_error_code_t SysOnStartApplication(ApplicationContext *pAppContext)
   {
     DatalogAppTask_SetMLCIF((AManagedTask *) sLSM6DSV16XObj);
   }
+
 
   DatalogAppTask_SetIspuIF((AManagedTask *) sISM330ISObj);
 
@@ -466,7 +481,7 @@ sys_error_code_t SysOnStartApplication(ApplicationContext *pAppContext)
   Lps22df_Press_PnPLInit(pLPS22DF_PRESS_PnPLObj);
   Mp23db01hp_Mic_PnPLInit(pMP23DB01HP_MIC_PnPLObj);
   Stts22h_Temp_PnPLInit(pSTTS22H_TEMP_PnPLObj);
-  Iis2dh_Acc_PnPLInit(pIis2dh_Acc_PnPLObj);
+  Iis2dh_Acc_PnPLInit(pIIS2DH_ACC_PnPLObj);
 
 
   /* Use the external ISM330IS with ISPU or the onboard LSM6DSV16X with MLC */

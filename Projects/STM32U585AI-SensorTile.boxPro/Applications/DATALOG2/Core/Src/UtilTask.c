@@ -48,7 +48,7 @@
 #define UTIL_TASK_CFG_UL_TIMER_PERIOD_MS       250
 #endif
 
-#define SYS_DEBUGF(level, message)             SYS_DEBUGF3(SYS_DBG_UTIL, level, message)
+#define SYS_DEBUGF(level, message)             SYS_DEBUGF3(SYS_DBG_LEVEL_VERBOSE, level, message)
 
 #if defined(DEBUG) || defined (SYS_DEBUG)
 #define sTaskObj                               sUtilTaskObj

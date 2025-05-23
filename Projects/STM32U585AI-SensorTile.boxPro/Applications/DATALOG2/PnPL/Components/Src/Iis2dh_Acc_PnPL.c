@@ -72,8 +72,9 @@ uint8_t Iis2dh_Acc_PnPL_vtblGetStatus(IPnPLComponent_t *_this, char **serialized
 
   tempJSON = json_value_init_object();
   JSON_Status = json_value_get_object(tempJSON);
-
   pnpl_iis2dh_acc_odr_t temp_odr_e = (pnpl_iis2dh_acc_odr_t)0;
+
+  
   iis2dh_acc_get_odr(&temp_odr_e);
   json_object_dotset_number(JSON_Status, "iis2dh_acc.odr", temp_odr_e);
   pnpl_iis2dh_acc_fs_t temp_fs_e = (pnpl_iis2dh_acc_fs_t)0;

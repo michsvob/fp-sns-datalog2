@@ -64,6 +64,8 @@ extern "C" {
 
 #define USE_MOTION_SENSOR_LIS2DU12_0       1U
 
+#define USE_MOTION_SENSOR_IIS2DH_0       1U
+
 #define USE_MOTION_SENSOR_LSM6DSV16X_0     1U
 
 #define BSP_NFCTAG_INSTANCE         0U

@@ -102,7 +102,7 @@ extern "C" {
 #define LOG_CTRL_MODE_USB         0x01
 #define LOG_CTRL_MODE_BLE         0x02
 
-#define SENSOR_NUMBER             19
+#define SENSOR_NUMBER             20
 #define ALGORITHM_NUMBER          0
 #define ACTUATOR_NUMBER           0
 #define OTHER_COMP_NUMBER         5
@@ -113,7 +113,7 @@ extern "C" {
 #define FORMAT_LEN 10U
 
 #define FW_VERSION_MAJOR    "3"
-#define FW_VERSION_MINOR    "0"
+#define FW_VERSION_MINOR    "1"
 #define FW_VERSION_PATCH    "0"
 
 /* Max BLE bandwidth for each sensor (in Byte) */

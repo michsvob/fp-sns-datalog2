@@ -32,7 +32,7 @@
 
 #define BOARD_ID_PROA           0x0D
 #define BLE_FW_ID_DATALOG2_PROA 0x1A
-#define USB_FW_ID_DATALOG2_PROA 0x0D
+#define USB_FW_ID_DATALOG2_PROA 0x0E
 
 #define BOARD_ID_PROB           0x11
 #define BLE_FW_ID_DATALOG2_PROB 0x15
@@ -71,7 +71,7 @@
 
 
 /* SensorManager configuration */
-#define SM_MAX_SENSORS                            11U
+#define SM_MAX_SENSORS                            12U
 
 
 // file UtilTask.c

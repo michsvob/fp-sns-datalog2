@@ -97,6 +97,7 @@ static IPnPLComponent_t *pLIS2DU12_ACC_PnPLObj = NULL;
 static IPnPLComponent_t *pSTTS22H_TEMP_PnPLObj = NULL;
 static IPnPLComponent_t *pLPS22DF_PRESS_PnPLObj = NULL;
 static IPnPLComponent_t *pMP23DB01HP_MIC_PnPLObj = NULL;
+static IPnPLComponent_t *pIIS2DH_ACC_PnPLObj = NULL;
 static IPnPLComponent_t *pLogControllerPnPLObj = NULL;
 static IPnPLComponent_t *pDeviceInfoPnPLObj = NULL;
 static IPnPLComponent_t *pFirmwareInfoPnPLObj = NULL;
@@ -104,7 +105,6 @@ static IPnPLComponent_t *pAcquisitionInfoPnPLObj = NULL;
 static IPnPLComponent_t *pTagsInfoPnPLObj = NULL;
 static IPnPLComponent_t *pAutomodePnPLObj = NULL;
 
-static IPnPLComponent_t *pIIS2DH_ACC_PnPLObj = NULL;
 
 static IPnPLComponent_t *pH3LIS331DL_ACC_PnPLObj = NULL;
 static IPnPLComponent_t *pILPS28QSW_PRESS_PnPLObj = NULL;
@@ -245,8 +245,9 @@ sys_error_code_t SysLoadApplicationContext(ApplicationContext *pAppContext)
     sILPS28QSWObj = ILPS28QSWTaskAlloc(NULL, NULL);
   }
   
+  //sIIS2DHObj = IIS2DHTaskAlloc(NULL, &MX_GPIO_CS_EXTERNALInitParams);
 
-    sIIS2DHObj = IIS2DHTaskAlloc(&MX_GPIO_INT1_EXTERNALInitParams, &MX_GPIO_CS_EXTERNALInitParams);
+  sIIS2DHObj = IIS2DHTaskAlloc(&MX_GPIO_INT1_EXTERNALInitParams, &MX_GPIO_CS_EXTERNALInitParams);
 
 
   /* Add the task object to the context. */
@@ -410,10 +411,11 @@ sys_error_code_t SysOnStartApplication(ApplicationContext *pAppContext)
   IEventListener *DatalogAppListener = DatalogAppTask_GetEventListenerIF((DatalogAppTask *) sDatalogAppObj);
   IEventSrcAddEventListener(LIS2DU12TaskGetEventSrcIF((LIS2DU12Task *) sLIS2DU12Obj), DatalogAppListener);
   IEventSrcAddEventListener(LIS2MDLTaskGetMagEventSrcIF((LIS2MDLTask *) sLIS2MDLObj), DatalogAppListener);
+  IEventSrcAddEventListener(IIS2DHTaskGetEventSrcIF((IIS2DHTask *) sIIS2DHObj), DatalogAppListener);
   IEventSrcAddEventListener(LPS22DFTaskGetPressEventSrcIF((LPS22DFTask *) sLPS22DFObj), DatalogAppListener);
   IEventSrcAddEventListener(MP23DB01HPTaskGetEventSrcIF((MP23DB01HPTask *) sMP23DB01HPObj), DatalogAppListener);
   IEventSrcAddEventListener(STTS22HTaskGetTempEventSrcIF((STTS22HTask *) sSTTS22HObj), DatalogAppListener);
-  IEventSrcAddEventListener(IIS2DHTaskGetEventSrcIF((IIS2DHTask *) sIIS2DHObj), DatalogAppListener);
+  
 
   /* Use the external ISM330IS with ISPU or the onboard LSM6DSV16X with MLC */
   if (sISM330ISObj)
@@ -477,12 +479,12 @@ sys_error_code_t SysOnStartApplication(ApplicationContext *pAppContext)
 
   //Sensor PnPL Components
   Lis2du12_Acc_PnPLInit(pLIS2DU12_ACC_PnPLObj);
+  Iis2dh_Acc_PnPLInit(pIIS2DH_ACC_PnPLObj);
   Lis2mdl_Mag_PnPLInit(pLIS2MDL_MAG_PnPLObj);
   Lps22df_Press_PnPLInit(pLPS22DF_PRESS_PnPLObj);
   Mp23db01hp_Mic_PnPLInit(pMP23DB01HP_MIC_PnPLObj);
   Stts22h_Temp_PnPLInit(pSTTS22H_TEMP_PnPLObj);
-  Iis2dh_Acc_PnPLInit(pIIS2DH_ACC_PnPLObj);
-
+  
 
   /* Use the external ISM330IS with ISPU or the onboard LSM6DSV16X with MLC */
   if (sISM330ISObj)

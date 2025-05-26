@@ -66,7 +66,7 @@
   #if (HSD_USE_DUMMY_DATA == 1)
     iis2dh_acc_set_samples_per_ts(0, NULL);
   #else
-    iis2dh_acc_set_samples_per_ts(1000, NULL);
+    iis2dh_acc_set_samples_per_ts(100, NULL);
   #endif
   
     int32_t value = 0;

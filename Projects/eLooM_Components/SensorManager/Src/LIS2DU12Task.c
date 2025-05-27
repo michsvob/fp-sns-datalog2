@@ -1188,6 +1188,7 @@ static inline sys_error_code_t LIS2DU12TaskPostReportToBack(LIS2DU12Task *_this,
 
 static sys_error_code_t LIS2DU12TaskSensorInit(LIS2DU12Task *_this)
 {
+  SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("LIS2DU12: SensorInit called\r\n"));
   assert_param(_this != NULL);
   sys_error_code_t res = SYS_NO_ERROR_CODE;
   stmdev_ctx_t *p_sensor_drv = (stmdev_ctx_t *) &_this->p_sensor_bus_if->m_xConnector;
@@ -1375,8 +1376,8 @@ static sys_error_code_t LIS2DU12TaskSensorReadData(LIS2DU12Task *_this)
     _this->fifo_level = 0;
   }
 #else
-  res = lis2du12_read_reg(p_sensor_drv, LIS2DU12_OUTX_L, (uint8_t *) _this->p_sensor_data_buff,
-                          ((uint16_t) samples_per_it * 6u));
+  res = lis2du12_read_reg(p_sensor_drv, LIS2DU12_OUTX_L, (uint8_t *) _this->p_sensor_data_buff, 
+  ((uint16_t) samples_per_it * 6u));
   _this->fifo_level = 1;
 #endif /* LIS2DU12_FIFO_ENABLED */
 

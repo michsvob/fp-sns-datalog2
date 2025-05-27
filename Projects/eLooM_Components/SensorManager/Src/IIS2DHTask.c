@@ -56,7 +56,6 @@
 #define IIS2DH_TASK_CFG_MAX_INSTANCES_COUNT      1
 #endif
 
-
 #define SYS_DEBUGF(level, message)               SYS_DEBUGF3(SYS_DBG_IIS2DH, level, message)
 
 #ifndef IIS2DH_TASK_CFG_I2C_ADDRESS
@@ -554,7 +553,7 @@ sys_error_code_t IIS2DHTask_vtblDoEnterPowerMode(AManagedTask *_this, const EPow
       }
     }
 
-    SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: -> STATE1\r\n"));
+    //SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: -> STATE1\r\n"));
   }
   else if (NewPowerMode == E_POWER_MODE_SLEEP_1)
   {
@@ -1027,7 +1026,7 @@ static sys_error_code_t IIS2DHTaskExecuteStepDatalog(AManagedTask *_this)
       }
       case SM_MESSAGE_ID_DATA_READY:
       {
-        SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: new data.\r\n"));
+        //SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: new data.\r\n"));
         res = IIS2DHTaskSensorReadData(p_obj);
         if (!SYS_IS_ERROR_CODE(res))
         {
@@ -1057,7 +1056,7 @@ static sys_error_code_t IIS2DHTaskExecuteStepDatalog(AManagedTask *_this)
 
               DataEventInit((IEvent *) &evt, p_obj->p_event_src, &p_obj->data, timestamp, p_obj->acc_id);
               IEventSrcSendEvent(p_obj->p_event_src, (IEvent *) &evt, NULL);
-              SYS_DEBUGF(SYS_DBG_LEVEL_DEFAULT, ("IIS2DH: ts = %f\r\n", (float)timestamp));
+              SYS_DEBUGF(SYS_DBG_LEVEL_ALL, ("IIS2DH: timestamp = %f\r\n", (float)timestamp));
 #if IIS2DH_FIFO_ENABLED
             }
 #endif
@@ -1230,7 +1229,7 @@ static sys_error_code_t IIS2DHTaskSensorInit(IIS2DHTask *_this)
   ctrl_reg1.yen = 0;
   ctrl_reg1.zen = 0;
   iis2dh_write_reg(p_sensor_drv, IIS2DH_CTRL_REG1, (uint8_t *)&ctrl_reg1, 1);
-  SYS_DEBUGF(SYS_DBG_LEVEL_SEVERE, ("IIS2DH: CTRL_REG1 written: 0x%02X\r\n", *((uint8_t *)&ctrl_reg1)));
+  SYS_DEBUGF(SYS_DBG_LEVEL_SEVERE, ("IIS2DH: task init CTRL_REG1 written: 0x%02X\r\n", *((uint8_t *)&ctrl_reg1)));
 
   /* Enable BDU */
   iis2dh_block_data_update_set(p_sensor_drv, PROPERTY_ENABLE);
@@ -1241,7 +1240,8 @@ static sys_error_code_t IIS2DHTaskSensorInit(IIS2DHTask *_this)
   iis2dh_operating_mode_set(p_sensor_drv, IIS2DH_HR_12bit);
 
   /* Big/Little Endian data selection configuration */
-  iis2dh_data_format_set(p_sensor_drv, IIS2DH_MSB_AT_LOW_ADD);
+  iis2dh_data_format_set(p_sensor_drv, IIS2DH_LSB_AT_LOW_ADD);
+  
   iis2dh_read_reg(p_sensor_drv, IIS2DH_CTRL_REG1, (uint8_t *)&ctrl_reg1, 1);
   ctrl_reg1.xen = 1;
   ctrl_reg1.yen = 1;
@@ -1359,7 +1359,6 @@ static sys_error_code_t IIS2DHTaskSensorInit(IIS2DHTask *_this)
 
 static sys_error_code_t IIS2DHTaskSensorReadData(IIS2DHTask *_this)
 {
-  SYS_DEBUGF(SYS_DBG_LEVEL_SEVERE, ("IIS2DH: calling sensor read data\r\n"));
   assert_param(_this != NULL);
   sys_error_code_t res = SYS_NO_ERROR_CODE;
   stmdev_ctx_t *p_sensor_drv = (stmdev_ctx_t *) &_this->p_sensor_bus_if->m_xConnector;
@@ -1379,7 +1378,8 @@ static sys_error_code_t IIS2DHTaskSensorReadData(IIS2DHTask *_this)
   }
 
 #else
-  res = iis2dh_read_reg(p_sensor_drv, IIS2DH_OUT_X_L, (uint8_t *) _this->p_sensor_data_buff, samples_per_it * 6);
+  res = iis2dh_read_reg(p_sensor_drv, IIS2DH_OUT_X_L, (uint8_t *) _this->p_sensor_data_buff, 
+  ((uint16_t) samples_per_it * 6u));
   _this->fifo_level = 1;
 #endif /* IIS2DH_FIFO_ENABLED */
 

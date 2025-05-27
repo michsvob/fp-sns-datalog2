@@ -245,9 +245,9 @@ sys_error_code_t SysLoadApplicationContext(ApplicationContext *pAppContext)
     sILPS28QSWObj = ILPS28QSWTaskAlloc(NULL, NULL);
   }
   
-  //sIIS2DHObj = IIS2DHTaskAlloc(NULL, &MX_GPIO_CS_EXTERNALInitParams);
+  sIIS2DHObj = IIS2DHTaskAlloc(NULL, &MX_GPIO_CS_EXTERNALInitParams);
 
-  sIIS2DHObj = IIS2DHTaskAlloc(&MX_GPIO_INT1_EXTERNALInitParams, &MX_GPIO_CS_EXTERNALInitParams);
+  //sIIS2DHObj = IIS2DHTaskAlloc(&MX_GPIO_INT1_EXTERNALInitParams, &MX_GPIO_CS_EXTERNALInitParams);
 
 
   /* Add the task object to the context. */

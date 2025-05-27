@@ -66,7 +66,7 @@
   #if (HSD_USE_DUMMY_DATA == 1)
     iis2dh_acc_set_samples_per_ts(0, NULL);
   #else
-    iis2dh_acc_set_samples_per_ts(100, NULL);
+    iis2dh_acc_set_samples_per_ts(1344, NULL);
   #endif
   
     int32_t value = 0;
@@ -325,7 +325,7 @@
         value = 400.0f;
         break;
       case pnpl_iis2dh_acc_odr_hz1344:
-        value = 800.0f;
+        value = 1344.0f;
         break;
         break;
       default:
@@ -414,7 +414,7 @@
     }
     uint8_t ret = PNPL_NO_ERROR_CODE;
     int32_t min_v = 0;
-    int32_t max_v = 1000;
+    int32_t max_v = 1344;
     if (value >= min_v && value <= max_v)
     {
       iis2dh_acc_model.stream_params.spts = value;

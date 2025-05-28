@@ -105,7 +105,7 @@ extern "C" {
 #define SENSOR_NUMBER             20
 #define ALGORITHM_NUMBER          0
 #define ACTUATOR_NUMBER           0
-#define OTHER_COMP_NUMBER         5
+#define OTHER_COMP_NUMBER         6
 
 #define N_MAX_EP            5
 
